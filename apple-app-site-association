@@ -6,16 +6,16 @@
                 "appID": "NUR5DQE5Y4.ru.rt.smarthome2.enterprise",
                 "paths": [
                     "/account/new*",
-                    "/profile/promo-code-activation*",
-                    "/profile/refill-balance*"
+                    "/profile/refill-balance",
+                    "/profile/promo-code-activation*"
                 ]
             },
             {
                 "appID": "J2XJT9BQBQ.ru.rt.smarthome",
                 "paths": [
                     "/account/new*",
-                    "/profile/promo-code-activation*",
-                    "/profile/refill-balance*"
+                    "/profile/refill-balance",
+                    "/profile/promo-code-activation*"
                 ]
             }
         ]
