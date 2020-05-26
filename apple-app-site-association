@@ -4,10 +4,12 @@
         "details": [
             {
                 "appID": "NUR5DQE5Y4.ru.rt.smarthome2.enterprise",
+                "components": [
+                      {"/profile?": {"modal": "refill_balance"}}
+                ]
                 "paths": [
                     "/account/new*",
-                    "/profile/promo-code-activation*",
-                    "/profile?modal=refill_balance"
+                    "/profile/promo-code-activation*"
                 ]
             },
             {
