@@ -6,7 +6,8 @@
                 "appID": "NUR5DQE5Y4.ru.rt.smarthome2.enterprise",
                 "paths": [
                     "/account/new*",
-                    "/profile/*"
+                    "/profile/refill-balance",
+                    "/profile/promo-code-activation*"
                 ]
             },
             {
