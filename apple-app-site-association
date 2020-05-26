@@ -9,7 +9,7 @@
                         "/": "/profile*",
                         "?": {"modal": "refill_balance"}
                     }
-                ]
+                ],
                 "paths": [
                     "/account/new*",
                     "/profile/promo-code-activation*"
