@@ -1,7 +1,12 @@
 <html>
 <body>
   <script>
-    window.open('https://lk.smarthome.rt.ru/link/refill-balance', '_blank');
+    document.location = 'rtsmarthome://main';
+  setTimeout(function(){
+    if(confirm('You do not seem to have iThrown installed, do you want to go download it now?')){
+      document.location = 'http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=293049283&mt=8&uo=6';
+    }
+  }, 300);
   </script>
   
   <h1>Stage</h1>
