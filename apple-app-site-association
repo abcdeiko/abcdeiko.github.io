@@ -3,19 +3,17 @@
         "apps": [],
         "details": [
             {
-                "appID": "NUR5DQE5Y4.ru.rt.smarthome2.enterprise",
+                "appID": "C3Z3RY8JKR.ru.rt.mlk.ios.test",
                 "paths": [
-                    "/account/new*",
-                    "/profile/refill-balance",
-                    "/profile/promo-code-activation*"
+                    "*",
+                    "/"
                 ]
             },
             {
-                "appID": "J2XJT9BQBQ.ru.rt.smarthome",
+                "appID": "J2XJT9BQBQ.ru.rostelecom.RTcabinet",
                 "paths": [
-                    "/account/new*",
-                    "/profile/refill-balance",
-                    "/profile/promo-code-activation*"
+                    "*",
+                    "/"
                 ]
             }
         ]
