@@ -17,6 +17,13 @@
                 ]
             },
             {
+                "appID": "P9789596WP.ru.rt.mlk.ios.test",
+                "paths": [
+                    "*",
+                    "/"
+                ]
+            },
+            {
                 "appID": "J2XJT9BQBQ.ru.rostelecom.RTcabinet",
                 "paths": [
                     "*",
