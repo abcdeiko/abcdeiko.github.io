@@ -1,5 +1,126 @@
-<html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Native Bridge Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: -apple-system, Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      background: #f5f5f5;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #007aff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:active {
+      opacity: 0.7;
+    }
+    input {
+      width: 90%;
+      max-width: 400px;
+      margin-top: 20px;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
 <body>
-    <h2>Hello world!</h2>
+
+  <h1>Bridge Test</h1>
+
+  <button id="sendBtn">Отправить команду в native</button>
+  <input type="text" id="output" placeholder="Здесь появятся события от native" readonly />
+
+  <script>
+    // ---- Универсальный JS Bridge ----
+    window.NativeBridge = (function () {
+      const listeners = {};
+
+      function sendToIOS(message) {
+        try {
+          if (window.webkit?.messageHandlers?.nativeBridge) {
+            window.webkit.messageHandlers.nativeBridge.postMessage(message);
+            return true;
+          }
+        } catch {}
+        return false;
+      }
+
+      function sendToAndroid(message) {
+        try {
+          if (window.NativeBridgeAndroid?.postMessage) {
+            window.NativeBridgeAndroid.postMessage(JSON.stringify(message));
+            return true;
+          }
+          if (window.Android?.postMessage) {
+            window.Android.postMessage(JSON.stringify(message));
+            return true;
+          }
+        } catch {}
+        return false;
+      }
+
+      function send(name, payload) {
+        const msg = { name, payload };
+        if (!sendToIOS(msg) && !sendToAndroid(msg)) {
+          console.warn('No native bridge found for message:', msg);
+        }
+      }
+
+      function receive(name, payload) {
+        const list = listeners[name];
+        if (list) list.forEach((cb) => cb(payload));
+      }
+
+      function on(name, callback) {
+        listeners[name] = listeners[name] || [];
+        listeners[name].push(callback);
+      }
+
+      // вызываться из native
+      window.__nativeReceive = function (name, payloadJSON) {
+        let payload = payloadJSON;
+        if (typeof payloadJSON === 'string') {
+          try { payload = JSON.parse(payloadJSON); } catch {}
+        }
+        receive(name, payload);
+      };
+
+      return { send, on };
+    })();
+    // ---- Конец JS Bridge ----
+
+    // Логика интерфейса
+    const button = document.getElementById('sendBtn');
+    const output = document.getElementById('output');
+
+    button.addEventListener('click', () => {
+      const payload = { text: "Привет из WebView!", time: new Date().toISOString() };
+      NativeBridge.send('webToNative', payload);
+      output.value = "Отправлено в native: " + JSON.stringify(payload);
+    });
+
+    // Обработка сообщений от native
+    NativeBridge.on('nativeToWeb', (data) => {
+      output.value = "Сообщение от native: " + JSON.stringify(data);
+    });
+  </script>
+
 </body>
 </html>
