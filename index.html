@@ -111,7 +111,7 @@
     const output = document.getElementById('output');
 
     button.addEventListener('click', () => {
-      const payload = { event_type: "on_assistant_pressed" };
+      const payload = { event_type: "on_personal_account_pressed" };
       NativeBridge.send('webToNative', payload);
       output.value = "Отправлено в native: " + JSON.stringify(payload);
     });
