@@ -111,7 +111,7 @@
     const output = document.getElementById('output');
 
     button.addEventListener('click', () => {
-      const payload = { text: "Привет из WebView!", time: new Date().toISOString() };
+      const payload = { event_type: "on_assistant_pressed" };
       NativeBridge.send('webToNative', payload);
       output.value = "Отправлено в native: " + JSON.stringify(payload);
     });
