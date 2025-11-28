@@ -45,6 +45,9 @@
   <h1>Bridge Test</h1>
 
   <button id="sendBtn">Отправить команду в native</button>
+  <button id="sendAnalyticsFull">Analytics full</button>
+  <button id="sendAnalyticsEmpty">Analytics empty</button>
+  <button id="sendAnalyticsNil">Analytics nil</button>
   <input type="text" id="output" placeholder="Здесь появятся события от native" readonly />
 
   <script>
@@ -109,11 +112,32 @@
     // Логика интерфейса
     const button = document.getElementById('sendBtn');
     const output = document.getElementById('output');
-
+    const buttonAnalyticsFull = document.getElementById('sendAnalyticsFull');
+    const buttonAnalyticsEmpty = document.getElementById('sendAnalyticsEmpty');
+    const buttonAnalyticsNil = document.getElementById('sendAnalyticsNil');
+    
     button.addEventListener('click', () => {
       const payload = { event_type: "on_personal_account_pressed" };
       NativeBridge.send('on_personal_account_pressed', payload);
       output.value = "Отправлено в native: " + JSON.stringify(payload);
+    });
+
+    buttonAnalyticsFull.addEventListener('click', () => {
+      const payload = { name: "some_test_analytics_name_full", params: { user_id: "1234, some_values: { [{ some_value: "1" }, { some_value: "2" }]} } };
+      NativeBridge.send('on_analytics_send', payload);
+      output.value = JSON.stringify(payload);
+    });
+
+    buttonAnalyticsEmpty.addEventListener('click', () => {
+      const payload = { name: "some_test_analytics_name_empty", params: {} };
+      NativeBridge.send('on_analytics_send', payload);
+      output.value = JSON.stringify(payload);
+    });
+
+    buttonAnalyticsNil.addEventListener('click', () => {
+      const payload = { name: "some_test_analytics_name_null", params: null };
+      NativeBridge.send('on_analytics_send', payload);
+      output.value = JSON.stringify(payload);
     });
 
     // Обработка сообщений от native
