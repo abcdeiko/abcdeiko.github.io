@@ -123,22 +123,38 @@
     });
 
     buttonAnalyticsFull.addEventListener('click', () => {
-      const payload = { name: "some_test_analytics_name_full", params: { user_id: "1234, some_values: { [{ some_value: "1" }, { some_value: "2" }]} } };
+      const payload = {
+        name: "some_test_analytics_name_full",
+        params: {
+          user_id: "1234",
+          some_values: [
+            { some_value: "1" },
+            { some_value: "2" }
+          ]
+        }
+      };
       NativeBridge.send('on_analytics_send', payload);
       output.value = JSON.stringify(payload);
     });
-
+    
     buttonAnalyticsEmpty.addEventListener('click', () => {
-      const payload = { name: "some_test_analytics_name_empty", params: {} };
+      const payload = {
+        name: "some_test_analytics_name_empty",
+        params: {}
+      };
+      NativeBridge.send('on_analytics_send', payload);
+      output.value = JSON.stringify(payload);
+    });
+    
+    buttonAnalyticsNil.addEventListener('click', () => {
+      const payload = {
+        name: "some_test_analytics_name_null",
+        params: null
+      };
       NativeBridge.send('on_analytics_send', payload);
       output.value = JSON.stringify(payload);
     });
 
-    buttonAnalyticsNil.addEventListener('click', () => {
-      const payload = { name: "some_test_analytics_name_null", params: null };
-      NativeBridge.send('on_analytics_send', payload);
-      output.value = JSON.stringify(payload);
-    });
 
     // Обработка сообщений от native
     NativeBridge.on('nativeToWeb', (data) => {
