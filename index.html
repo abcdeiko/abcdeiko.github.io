@@ -128,7 +128,60 @@
   const cookieMcd = document.getElementById('cookieMcd');
   const cookieRsid = document.getElementById('cookieRsid');
 
-  const buttonRefresh = document.getElementById('refreshToken');
+  const output = document.getElementById('output');
+    const cookieMcd = document.getElementById('cookieMcd');
+    const cookieRsid = document.getElementById('cookieRsid');
+
+    const button = document.getElementById('sendBtn');
+    const buttonAnalyticsFull = document.getElementById('sendAnalyticsFull');
+    const buttonAnalyticsEmpty = document.getElementById('sendAnalyticsEmpty');
+    const buttonAnalyticsNil = document.getElementById('sendAnalyticsNil');
+    const buttonRefresh = document.getElementById('refreshToken');
+
+
+    button.addEventListener('click', () => {
+      const payload = { event_type: "on_personal_account_pressed" };
+      NativeBridge.send('on_personal_account_pressed', payload);
+      output.value = "Отправлено в native: " + JSON.stringify(payload);
+    });
+
+    buttonAnalyticsFull.addEventListener('click', () => {
+      const payload = {
+        name: "some_test_analytics_name_full",
+        params: {
+          user_id: "1234",
+          some_values: [
+            { some_value: "1" },
+            { some_value: "2" }
+          ]
+        }
+      };
+      NativeBridge.send('on_analytics_send', payload);
+      output.value = JSON.stringify(payload);
+    });
+
+    buttonAnalyticsEmpty.addEventListener('click', () => {
+      const payload = {
+        name: "some_test_analytics_name_empty",
+        params: {}
+      };
+      NativeBridge.send('on_analytics_send', payload);
+      output.value = JSON.stringify(payload);
+    });
+
+    buttonAnalyticsNil.addEventListener('click', () => {
+      const payload = {
+        name: "some_test_analytics_name_null",
+        params: null
+      };
+      NativeBridge.send('on_analytics_send', payload);
+      output.value = JSON.stringify(payload);
+    });
+
+    buttonRefresh.addEventListener('click', () => {
+      NativeBridge.send('on_token_expired', {});
+      output.value = "Отправлено: on_token_expired";
+    });
 
   function getCookie(name) {
     const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
