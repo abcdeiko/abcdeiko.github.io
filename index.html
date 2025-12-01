@@ -224,11 +224,6 @@
     cookieRsid.value = getCookie("rsid") || "(нет cookie)";
     NativeBridge.send('cookies_provided', { isMcd: cookieMcd.value, rsid: cookieRsid.value });
   });
-
-  window.addEventListener('error', (e) => {
-    console.error('window error', e);
-    output.value = 'Ошибка в скрипте: ' + (e && e.message ? e.message : JSON.stringify(e));
-  });
 </script>
 
 
