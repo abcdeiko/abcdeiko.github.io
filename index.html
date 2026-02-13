@@ -25,7 +25,7 @@
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
-      margin-top: 16px; /* расстояние между кнопками */
+      margin-top: 16px;
     }
     button:active {
       opacity: 0.7;
@@ -45,24 +45,14 @@
 
   <h1>Bridge Test</h1>
 
-  <div>
-    <button id="sendBtn">Отправить команду в native</button>
-  </div>
-  <div>
-    <button id="sendAnalyticsFull">Analytics full</button>
-  </div>
-  <div>
-    <button id="sendAnalyticsEmpty">Analytics empty</button>
-  </div>
-  <div>
-    <button id="sendAnalyticsNil">Analytics nil</button>
-  </div>
-  <div>
-    <button id="refreshToken">Refresh token</button>
-  </div>
+  <div><button id="sendBtn">Отправить команду в native</button></div>
+  <div><button id="sendAnalyticsFull">Analytics full</button></div>
+  <div><button id="sendAnalyticsEmpty">Analytics empty</button></div>
+  <div><button id="sendAnalyticsNil">Analytics nil</button></div>
+  <div><button id="refreshToken">Refresh token</button></div>
+  <div><button id="togglePing">Enable ping</button></div>
 
   <input type="text" id="output" placeholder="Здесь появятся события от native" readonly />
-
   <input type="text" id="cookieMcd" placeholder="cookie is-mcd" readonly />
   <input type="text" id="cookieRsid" placeholder="cookie rsid" readonly />
 
@@ -74,7 +64,6 @@
     function sendToIOS(message) {
       try {
         if (window.webkit?.messageHandlers?.nativeBridge) {
-          // iOS WKWebView accepts a JS object
           window.webkit.messageHandlers.nativeBridge.postMessage(message);
           return true;
         }
@@ -106,9 +95,11 @@
 
     function receive(name, payload) {
       const list = listeners[name];
-      if (list) list.forEach((cb) => {
-        try { cb(payload); } catch (e) { console.error(e); }
-      });
+      if (list) {
+        list.forEach((cb) => {
+          try { cb(payload); } catch (e) { console.error(e); }
+        });
+      }
     }
 
     function on(name, callback) {
@@ -116,22 +107,21 @@
       listeners[name].push(callback);
     }
 
-    /**
-     * Сигнатура вызова из native:
-     * window.__nativeReceive(name, payloadJSON)
-     * Но иногда native может послать один объект { name, payload } — поддерживаем оба варианта.
-     */
+    function off(name, callback) {
+      const list = listeners[name];
+      if (!list) return;
+      listeners[name] = list.filter(cb => cb !== callback);
+    }
+
     window.__nativeReceive = function (arg1, arg2) {
       try {
         if (typeof arg1 === 'string') {
-          // стандартный: (name, payloadJSON)
           let payload = arg2;
           if (typeof arg2 === 'string') {
             try { payload = JSON.parse(arg2); } catch {}
           }
           receive(arg1, payload);
         } else if (arg1 && typeof arg1 === 'object' && 'name' in arg1) {
-          // вариант: single object { name, payload }
           receive(arg1.name, arg1.payload);
         } else {
           console.warn('__nativeReceive: unknown args', arg1, arg2);
@@ -141,11 +131,10 @@
       }
     };
 
-    return { send, on };
+    return { send, on, off };
   })();
   // ---- Конец JS Bridge ----
 
-  // DOM элементы
   const output = document.getElementById('output');
   const cookieMcd = document.getElementById('cookieMcd');
   const cookieRsid = document.getElementById('cookieRsid');
@@ -155,6 +144,10 @@
   const btnAnalyticsEmpty = document.getElementById('sendAnalyticsEmpty');
   const btnAnalyticsNil = document.getElementById('sendAnalyticsNil');
   const btnRefresh = document.getElementById('refreshToken');
+  const btnTogglePing = document.getElementById('togglePing');
+
+  let pingEnabled = false;
+  let pingHandler = null;
 
   function getCookie(name) {
     const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/[-.+*]/g, '\\$&') + '=([^;]*)'));
@@ -208,7 +201,32 @@
     output.value = "Отправлено: on_token_expired";
   });
 
-  // --- Обработка сообщений от native ---
+  // ---- Toggle Ping ----
+  btnTogglePing?.addEventListener('click', () => {
+    if (!pingEnabled) {
+      pingHandler = () => {
+        output.value = "Получен mcd-ping → отправляем mcd-pong";
+        NativeBridge.send('mcd-pong', {});
+      };
+
+      NativeBridge.on('mcd-ping', pingHandler);
+
+      pingEnabled = true;
+      btnTogglePing.textContent = 'Disable ping';
+      output.value = 'Ping enabled';
+    } else {
+      if (pingHandler) {
+        NativeBridge.off('mcd-ping', pingHandler);
+        pingHandler = null;
+      }
+
+      pingEnabled = false;
+      btnTogglePing.textContent = 'Enable ping';
+      output.value = 'Ping disabled';
+    }
+  });
+
+  // ---- Сообщения от native ----
   NativeBridge.on('nativeToWeb', (data) => {
     output.value = "Сообщение от native: " + JSON.stringify(data);
   });
@@ -222,10 +240,12 @@
   NativeBridge.on('get_cookies', () => {
     cookieMcd.value = getCookie("is-mcd") || "(нет cookie)";
     cookieRsid.value = getCookie("rsid") || "(нет cookie)";
-    NativeBridge.send('cookies_provided', { isMcd: cookieMcd.value, rsid: cookieRsid.value });
+    NativeBridge.send('cookies_provided', {
+      isMcd: cookieMcd.value,
+      rsid: cookieRsid.value
+    });
   });
+
 </script>
-
-
 </body>
 </html>
