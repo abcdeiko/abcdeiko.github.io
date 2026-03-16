@@ -45,6 +45,8 @@
 
   <h1>Bridge Test</h1>
 
+  <div><button id="profileBtn">Аватарка</button></div>
+  <div><button id="profitBtn">Выгода</button></div>
   <div><button id="sendBtn">Отправить команду в native</button></div>
   <div><button id="sendAnalyticsFull">Analytics full</button></div>
   <div><button id="sendAnalyticsEmpty">Analytics empty</button></div>
@@ -145,6 +147,8 @@
   const btnAnalyticsNil = document.getElementById('sendAnalyticsNil');
   const btnRefresh = document.getElementById('refreshToken');
   const btnTogglePing = document.getElementById('togglePing');
+  const btnProfile = document.getElementById('profileBtn');
+  const btnProfit = document.getElementById('profitBtn');
 
   let pingEnabled = false;
   let pingHandler = null;
@@ -156,6 +160,16 @@
 
   cookieMcd.value = getCookie("is-mcd") || "(нет cookie)";
   cookieRsid.value = getCookie("rsid") || "(нет cookie)";
+
+  btnProfile?.addEventListener('click', () => {
+    NativeBridge.send('on_mcd_profile_pressed', {});
+    output.value = "Отправлено: on_mcd_profile_pressed";
+  });
+
+  btnProfit?.addEventListener('click', () => {
+    NativeBridge.send('on_sber_advantage_pressed', {});
+    output.value = "Отправлено: on_sber_advantage_pressed";
+  });
 
   btnSend?.addEventListener('click', () => {
     const payload = { event_type: "on_personal_account_pressed" };
